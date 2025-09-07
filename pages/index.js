@@ -208,8 +208,10 @@ return (
       </div>
     )}
 
-    {/*🍎display flexが効くかもしれない*/}
-    <div style={{display:"flex",backgroundcolor:"red"}}>
+    {/*🍎display flexが効くかもしれない<div style={{display:"flex",backgroundcolor:"red"}}>*/}
+    
+    <div style={{display:"grid",gridTemplateColumns: "2fr 1fr"}}>
+     
       <div style={{width:"500px",backgroundColor:"blue"}}>40%</div>
       <div style={{width:"500px",backgroundColor:"green"}}>60%</div>
     </div>
