@@ -217,7 +217,7 @@ return (
         <li>サイズと画質を選ぶ</li>
         <li>「分割してZIP保存」ボタンを押す</li>
       </ul>
-      <video src="/mascot_intro.mp4" controls className="w-full rounded" />
+      <video src="../mascot_intro.mp4" controls className="w-full rounded" />
     </div>
 
   </div>
