@@ -212,8 +212,8 @@ return (
     
     <div style={{display:"grid",gridTemplateColumns: "2fr 1fr"}}>
      
-      <div style={{width:"500px",backgroundColor:"blue"}}>40%</div>
-      <div style={{width:"500px",backgroundColor:"green"}}>60%</div>
+      <div style={{backgroundColor:"blue"}}>40%</div>
+      <div style={{backgroundColor:"green"}}>60%</div>
     </div>
 
   </div>
