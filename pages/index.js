@@ -117,8 +117,11 @@ export default function Home() {
   };
 
 return (
-  <div style={{display:"grid",gridTemplateColumns: "2fr 1fr"}}>
 
+
+<div style={{display:"grid",gridTemplateColumns: "2fr 1fr"}}>
+
+  {/*🍎display flexが効く!<div style={{display:"flex",backgroundcolor:"red"}}>*/}
   <div style={{backgroundColor:"lightblue"}}>
 
     {/* セクション①：入力と実行 */}
@@ -191,6 +194,21 @@ return (
       </div>
     )}
 
+    {/* セクション④：ダウンロード後の演出 */}
+    {info && (
+      <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
+        <h2 className="text-xl font-bold mb-4 text-pink-400">🎉 ダウンロード完了！</h2>
+        <video src="/mascot_dance.mp4" autoPlay loop muted className="w-full rounded" />
+      </div>
+    )}
+  </div>
+
+
+
+
+
+  <div style={{backgroundColor:"lightgreen"}}>
+
     {/* セクション③：使い方＋マスコット動画 */}
     <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
       <h2 className="text-xl font-bold mb-4 text-yellow-400">🧑‍🏫 使い方ガイド</h2>
@@ -202,24 +220,7 @@ return (
       <video src="/mascot_intro.mp4" controls className="w-full rounded" />
     </div>
 
-    {/* セクション④：ダウンロード後の演出 */}
-    {info && (
-      <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
-        <h2 className="text-xl font-bold mb-4 text-pink-400">🎉 ダウンロード完了！</h2>
-        <video src="/mascot_dance.mp4" autoPlay loop muted className="w-full rounded" />
-      </div>
-    )}
-
-    {/*🍎display flexが効くかもしれない<div style={{display:"flex",backgroundcolor:"red"}}>*/}
-    
-    
-     
-      
-
   </div>
-      <div style={{backgroundColor:"green"}}>60%</div>
-    
-
-  </div>
+</div>
 );
 }
