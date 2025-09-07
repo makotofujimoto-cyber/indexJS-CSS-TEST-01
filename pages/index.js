@@ -117,7 +117,9 @@ export default function Home() {
   };
 
 return (
-  <div className="flex flex-wrap bg-black text-white min-h-screen p-6 gap-6">
+  <div style={{display:"grid",gridTemplateColumns: "2fr 1fr"}}>
+
+  <div style={{backgroundColor:"lightblue"}}>
 
     {/* セクション①：入力と実行 */}
     <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
@@ -210,11 +212,13 @@ return (
 
     {/*🍎display flexが効くかもしれない<div style={{display:"flex",backgroundcolor:"red"}}>*/}
     
-    <div style={{display:"grid",gridTemplateColumns: "2fr 1fr"}}>
+    
      
-      <div style={{backgroundColor:"blue"}}>40%</div>
+      
+
+  </div>
       <div style={{backgroundColor:"green"}}>60%</div>
-    </div>
+    
 
   </div>
 );
