@@ -209,7 +209,7 @@ return (
     )}
 
     {/*🍎display flexが効くかもしれない*/}
-    <div style={{disply:"flex",backgroundcolor:"red"}}>
+    <div style={{display:"flex",backgroundcolor:"red"}}>
       <div style={{width:"500px",backgroundColor:"blue"}}>40%</div>
       <div style={{width:"500px",backgroundColor:"green"}}>60%</div>
     </div>
