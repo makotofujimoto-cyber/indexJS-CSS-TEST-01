@@ -8,8 +8,8 @@ const ffmpeg = createFFmpeg({ log: true });
 export default function Home() {
   const [videoFile, setVideoFile] = useState(null);
   const [processing, setProcessing] = useState(false);
-  const [size, setSize] = useState(960); // スマホ版v2プリセット
-  const [quality, setQuality] = useState(3); // 約92%
+  const [size, setSize] = useState(960);
+  const [quality, setQuality] = useState(3);
   const [status, setStatus] = useState('');
   const [info, setInfo] = useState(null);
 
@@ -17,9 +17,7 @@ export default function Home() {
     return new Promise((resolve) => {
       const video = document.createElement('video');
       video.preload = 'metadata';
-      video.onloadedmetadata = () => {
-        resolve(video.duration);
-      };
+      video.onloadedmetadata = () => resolve(video.duration);
       video.src = URL.createObjectURL(file);
     });
   };
@@ -41,9 +39,7 @@ export default function Home() {
     const targetFrames = 150;
     const calculatedFps = Math.ceil(targetFrames / duration);
 
-    if (!ffmpeg.isLoaded()) {
-      await ffmpeg.load();
-    }
+    if (!ffmpeg.isLoaded()) await ffmpeg.load();
 
     try {
       ffmpeg.FS('unlink', 'input.mp4');
@@ -59,7 +55,6 @@ export default function Home() {
     );
 
     let files = ffmpeg.FS('readdir', '/').filter(f => f.endsWith('.jpg'));
-
     if (files.length > 150) {
       files = files.slice(0, 150);
       setStatus(`⚠️ 抽出枚数が150枚を超えたため、先頭150枚に制限しました。`);
@@ -99,7 +94,6 @@ export default function Home() {
     }[parseInt(quality)] || `${100 - quality * 5}%`;
 
     const zipFileName = `ugoira_spv2_${imageWidth}x${imageHeight}_${qualityLabel}_${totalMB}MB.zip`;
-
     const zipBlob = await zip.generateAsync({ type: 'blob' });
     saveAs(zipBlob, zipFileName);
 
@@ -116,111 +110,97 @@ export default function Home() {
     setProcessing(false);
   };
 
-return (
+  // 💡 レスポンシブスタイル
+  const layoutStyle = {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gap: '20px',
+    padding: '20px',
+  };
 
+  if (window.innerWidth >= 768) {
+    layoutStyle.gridTemplateColumns = '2fr 1fr';
+  }
 
-<div style={{display:"grid",gridTemplateColumns: "2fr 1fr"}}>
+  return (
+    <div style={layoutStyle}>
+      {/* 左カラム：メイン機能 */}
+      <div style={{ backgroundColor: '#e0f7fa', padding: '10px', borderRadius: '8px' }}>
+        <h2 style={{ fontSize: '20px', color: '#0077b6' }}>🎬 MPDU - 動画を分割してZIP保存</h2>
 
-  {/*🍎display flexが効く!<div style={{display:"flex",backgroundcolor:"red"}}>*/}
-  <div style={{backgroundColor:"lightblue"}}>
+        <input type="file" accept="video/mp4" onChange={handleFileChange} style={{ margin: '10px 0' }} />
 
-    {/* セクション①：入力と実行 */}
-    <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
-      <h2 className="text-xl font-bold mb-4 text-blue-400">🎬 動画を選択して分割🎬 MPDU - Movie to Picture Direction by Ugoira</h2>
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+          <label>
+            サイズ:
+            <select value={size} onChange={(e) => setSize(e.target.value)} style={{ marginLeft: '5px' }}>
+              <option value="320">320px</option>
+              <option value="640">640px</option>
+              <option value="960">960px</option>
+              <option value="1280">1280px</option>
+              <option value="1920">1920px</option>
+            </select>
+          </label>
 
-      <input
-        type="file"
-        accept="video/mp4"
-        onChange={handleFileChange}
-        className="mb-4 text-white"
-      />
-
-      <div className="flex gap-4 mb-4">
-        <label>
-          サイズ:
-          <select
-            value={size}
-            onChange={(e) => setSize(e.target.value)}
-            className="ml-2 bg-gray-800 text-white p-1 rounded"
-          >
-            <option value="320">320px</option>
-            <option value="640">640px</option>
-            <option value="960">960px（スマホ版v2）</option>
-            <option value="1280">1280px</option>
-            <option value="1920">1920px</option>
-          </select>
-        </label>
-
-        <label>
-          画質:
-          <select
-            value={quality}
-            onChange={(e) => setQuality(e.target.value)}
-            className="ml-2 bg-gray-800 text-white p-1 rounded"
-          >
-            <option value="2">100%</option>
-            <option value="3">92%（スマホ版v2）</option>
-            <option value="5">80%</option>
-            <option value="10">60%</option>
-            <option value="15">50%</option>
-          </select>
-        </label>
-      </div>
-
-      <button
-        onClick={processVideo}
-        disabled={processing || !videoFile}
-        className={`px-6 py-2 rounded bg-blue-600 hover:bg-blue-800 transition ${
-          processing ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-      >
-        {processing ? '分割中...' : '分割してZIP保存'}
-      </button>
-
-      <p className="mt-4 text-sm text-gray-300">{status}</p>
-    </div>
-
-    {/* セクション②：出力情報 */}
-    {info && (
-      <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
-        <h2 className="text-xl font-bold mb-4 text-green-400">📦 出力情報</h2>
-        <div className="text-sm text-green-300">
-          <p>枚数: {info.count}枚</p>
-          <p>画像サイズ: {info.width}×{info.height}px</p>
-          <p>画質: {info.quality}</p>
-          <p>ZIP容量: {info.size}MB</p>
-          <p>ファイル名: {info.name}</p>
+          <label>
+            画質:
+            <select value={quality} onChange={(e) => setQuality(e.target.value)} style={{ marginLeft: '5px' }}>
+              <option value="2">100%</option>
+              <option value="3">92%</option>
+              <option value="5">80%</option>
+              <option value="10">60%</option>
+              <option value="15">50%</option>
+            </select>
+          </label>
         </div>
+
+        <button
+          onClick={processVideo}
+          disabled={processing || !videoFile}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#0077b6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: processing ? 'not-allowed' : 'pointer',
+            opacity: processing ? 0.6 : 1,
+          }}
+        >
+          {processing ? '分割中...' : '分割してZIP保存'}
+        </button>
+
+        <p style={{ marginTop: '10px', color: '#555' }}>{status}</p>
+
+        {info && (
+          <div style={{ marginTop: '20px', backgroundColor: '#f1f1f1', padding: '10px', borderRadius: '5px' }}>
+            <h3 style={{ color: '#2e7d32' }}>📦 出力情報</h3>
+            <p>枚数: {info.count}枚</p>
+            <p>画像サイズ: {info.width}×{info.height}px</p>
+            <p>画質: {info.quality}</p>
+            <p>ZIP容量: {info.size}MB</p>
+            <p>ファイル名: {info.name}</p>
+          </div>
+        )}
+
+        {info && (
+          <div style={{ marginTop: '20px' }}>
+            <h3 style={{ color: '#d81b60' }}>🎉 ダウンロード完了！</h3>
+            <video src="/mascot_dance.mp4" autoPlay loop muted style={{ width: '100%', borderRadius: '8px' }} />
+          </div>
+        )}
       </div>
-    )}
 
-    {/* セクション④：ダウンロード後の演出 */}
-    {info && (
-      <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
-        <h2 className="text-xl font-bold mb-4 text-pink-400">🎉 ダウンロード完了！</h2>
-        <video src="/mascot_dance.mp4" autoPlay loop muted className="w-full rounded" />
+      {/* 右カラム：使い方ガイド */}
+      <div style={{ backgroundColor: '#f1f8e9', padding: '10px', borderRadius: '8px' }}>
+        <h2 style={{ fontSize: '20px', color: '#f9a825' }}>🧑‍🏫 使い方ガイド</h2>
+        <ul style={{ fontSize: '14px', color: '#444' }}>
+          <li>MP4動画を選択</li>
+          <li>サイズと画質を選ぶ</li>
+          <li>「分割してZIP保存」ボタンを押す</li>
+        </ul>
+        <video src="/mascot_intro.mp4" controls style={{ width: '100%', borderRadius: '8px' }} />
       </div>
-    )}
-  </div>
-
-
-
-
-
-  <div style={{backgroundColor:"lightgreen"}}>
-
-    {/* セクション③：使い方＋マスコット動画 */}
-    <div className="w-full md:w-1/2 lg:w-1/2 bg-gray-900 p-4 rounded shadow">
-      <h2 className="text-xl font-bold mb-4 text-yellow-400">🧑‍🏫 使い方ガイド</h2>
-      <ul className="list-disc list-inside text-sm text-gray-300 mb-4">
-        <li>MP4動画を選択</li>
-        <li>サイズと画質を選ぶ</li>
-        <li>「分割してZIP保存」ボタンを押す</li>
-      </ul>
-      <video src="../mascot_intro.mp4" controls className="w-full rounded" />
     </div>
-
-  </div>
-</div>
-);
+  );
 }
