@@ -16,10 +16,15 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
-    }
-  }, []);
+  };
+
+  handleResize(); // 初回判定
+
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
 
   const getVideoDuration = (file) => {
     return new Promise((resolve) => {
