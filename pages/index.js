@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// pages/index.js
+import { useState, useEffect } from 'react';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -12,6 +13,13 @@ export default function Home() {
   const [quality, setQuality] = useState(3);
   const [status, setStatus] = useState('');
   const [info, setInfo] = useState(null);
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth < 768);
+    }
+  }, []);
 
   const getVideoDuration = (file) => {
     return new Promise((resolve) => {
@@ -110,22 +118,31 @@ export default function Home() {
     setProcessing(false);
   };
 
-  // 💡 レスポンシブスタイル
   const layoutStyle = {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
+    display: 'flex',
+    flexDirection: isMobile ? 'column' : 'row',
     gap: '20px',
     padding: '20px',
   };
 
-  if (window.innerWidth >= 768) {
-    layoutStyle.gridTemplateColumns = '2fr 1fr';
-  }
+  const leftStyle = {
+    flex: isMobile ? '1 1 100%' : '2 1 0%',
+    backgroundColor: '#e0f7fa',
+    padding: '10px',
+    borderRadius: '8px',
+  };
+
+  const rightStyle = {
+    flex: isMobile ? '1 1 100%' : '1 1 0%',
+    backgroundColor: '#f1f8e9',
+    padding: '10px',
+    borderRadius: '8px',
+  };
 
   return (
     <div style={layoutStyle}>
       {/* 左カラム：メイン機能 */}
-      <div style={{ backgroundColor: '#e0f7fa', padding: '10px', borderRadius: '8px' }}>
+      <div style={leftStyle}>
         <h2 style={{ fontSize: '20px', color: '#0077b6' }}>🎬 MPDU - 動画を分割してZIP保存</h2>
 
         <input type="file" accept="video/mp4" onChange={handleFileChange} style={{ margin: '10px 0' }} />
@@ -192,7 +209,7 @@ export default function Home() {
       </div>
 
       {/* 右カラム：使い方ガイド */}
-      <div style={{ backgroundColor: '#f1f8e9', padding: '10px', borderRadius: '8px' }}>
+      <div style={rightStyle}>
         <h2 style={{ fontSize: '20px', color: '#f9a825' }}>🧑‍🏫 使い方ガイド</h2>
         <ul style={{ fontSize: '14px', color: '#444' }}>
           <li>MP4動画を選択</li>
